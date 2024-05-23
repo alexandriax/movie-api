@@ -40,3 +40,9 @@ app.get('/', (req, res) => {
 app.get('/movies', (req, res) => {
     res.json(topMovies);
 });
+
+//listen
+app.listen(8080, () => {
+    console.log('your app is listening on port 8080')
+})
+
