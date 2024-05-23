@@ -11,3 +11,22 @@ app.use(morgan('common'));
 
 
 
+let topMovies = [
+    
+    {
+        title: 'princess mononoke',
+        director: 'Hayao Miyazaki'
+    },
+    {
+        title: 'american mary',
+        director: 'Jen & Sylvia Soska'
+    },
+    {
+        title: 'deathproof',
+        director: 'Quentin Tarantino'
+    }
+
+    //continue top ten
+
+
+];
