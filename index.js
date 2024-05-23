@@ -30,3 +30,13 @@ let topMovies = [
 
 
 ];
+
+// GET requests
+
+app.get('/', (req, res) => {
+    res.send('welcome!')
+});
+
+app.get('/movies', (req, res) => {
+    res.json(topMovies);
+});
