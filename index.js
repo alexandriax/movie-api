@@ -6,3 +6,8 @@ const app = express();
 //static
 
 app.use(express.static('public'));
+
+app.use(morgan('common'));
+
+
+
