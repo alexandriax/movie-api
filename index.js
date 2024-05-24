@@ -1,13 +1,17 @@
 const express = require('express');
   morgan = require('morgan');
+  bodyParser = require('body-parser'),
+  uuid = require('uuid');
 
 const app = express();
+
 
 //static
 
 app.use(express.static('public'));
 
 app.use(morgan('common'));
+app.use(bodyParser.json());
 
 
 
