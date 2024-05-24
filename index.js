@@ -60,6 +60,18 @@ app.get('/movies/genre/:genreName', (req, res) => {
         res.status(400).send('genre not found')
     }
 });
+
+app.get('/movies/director/:directorName', (req, res) => {
+    const { directorName } = req.params;
+    const movie = movies.find(movie => movie.director.name === directorName).director;
+
+    if (movie) {
+        res.status(200).json(movie);
+    } else {
+        res.status(400).send('movie not found')
+    }
+});
+
 // GET requests
 
 app.get('/', (req, res) => {
