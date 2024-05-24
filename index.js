@@ -14,8 +14,7 @@ app.use(morgan('common'));
 app.use(bodyParser.json());
 
 
-
-let topMovies = [
+let movies = [
     
     {
         title: 'princess mononoke',
