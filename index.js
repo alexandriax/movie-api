@@ -38,6 +38,17 @@ let movies = [
 app.get('/movies', (req, res) => {
     res.status(200).json(movies);
 });
+
+app.get('/movies:title', (req, res) => {
+    const { title } = req.params;
+    const movie = movies.find(movie => movie.title === title );
+
+    if (movie) {
+        res.status(200).json(movie);
+    } else {
+        res.status(400).send('movie not found')
+    }
+});
 // GET requests
 
 app.get('/', (req, res) => {
