@@ -34,6 +34,10 @@ let movies = [
 
 ];
 
+// READ
+app.get('/movies', (req, res) => {
+    res.status(200).json(movies);
+});
 // GET requests
 
 app.get('/', (req, res) => {
