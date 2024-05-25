@@ -34,6 +34,12 @@ let movies = [
 
 ];
 
+// GET requests
+
+app.get('/', (req, res) => {
+    res.send('welcome!')
+});
+
 // READ
 app.get('/movies', (req, res) => {
     res.status(200).json(movies);
@@ -71,13 +77,6 @@ app.get('/movies/director/:directorName', (req, res) => {
         res.status(400).send('movie not found')
     }
 });
-
-// GET requests
-
-app.get('/', (req, res) => {
-    res.send('welcome!')
-});
-
 
 //listen
 app.listen(8080, () => {
