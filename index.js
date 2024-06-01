@@ -13,6 +13,19 @@ app.use(express.static('public'));
 app.use(morgan('common'));
 app.use(bodyParser.json());
 
+let users = [
+    {
+        name: 'ashley',
+        id: 1,
+        favoriteMovies: []
+    },
+    {
+        name: 'joe',
+        id: 2,
+        favoriteMovies: []
+    },
+
+];
 
 let movies = [
     
