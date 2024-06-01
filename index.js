@@ -31,15 +31,39 @@ let movies = [
     
     {
         title: 'princess mononoke',
-        director: 'Hayao Miyazaki'
+        description: '1997; shows the struggle between humans and the forest gods',
+        director: {
+            name:'Hayao Miyazaki',
+            description: 'an internationally acclaimed anime director who also founded studio ghibli'
+        },
+        genre: {
+            name: 'animation',
+            description: 'A film technique to make still images move'
+        },
     },
     {
         title: 'american mary',
-        director: 'Jen & Sylvia Soska'
+        description: 'a medical student resorts to offering body modification services to ease financial troubles, seeks revenge on those who wronged her',
+        director: {
+            name: 'Jen & Sylvia Soska',
+            description: 'also known as the soska sisters or the twins; they are twin sisters who collaborate in directing horror-focused films',
+        },
+        genre: {
+            name: 'horror',
+            description: 'A category of film meant to scare the viewer'
+        },
     },
     {
         title: 'deathproof',
-        director: 'Quentin Tarantino'
+        description: '2007; inspired by low-budge grindhouse films, shows the story of a stuntman who uses his modified car to murder women',
+        director: {
+            name: 'Quentin Tarantino',
+            description: 'film director focused on stylized violence',
+        },
+        genre: {
+            name: 'slasher',
+            description: 'A subgenre of horror known for consistent tropes'
+        },
     }
 
     //continue top ten
