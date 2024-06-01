@@ -18,6 +18,122 @@
         where<br>
         --this app will be hosted online.<br>
     </p>
+
+    <h3>End Points</h3> <br>
+
+    <h6>/users</h6> <br>
+    POST <br>
+    --creates new user <br>
+    <code>{
+        "name": "jim",
+        "favoriteMovies": [],
+    }</code> <br><br>
+
+
+    <h6>/users/:id/:movieTitle</h6><br>
+    POST<br>
+    --adds movie to user's favorite movies <br>
+    <code>"/users/605c4325de8d4ca9bbda3c7fff3e70bd/The%20Matrix</code> <br><br>
+
+    <h6>/users/:id</h6><br>
+    PUT <br>
+    --updates user with uuid <br>
+    <code>{
+        "name": "jim",
+        "favoriteMovies": [],
+        "id": "605c4325-de8d-4ca9-bbda-3c7fff3e70bd"
+    }</code><br><br>
+
+    <h6>/movies</h6><br>
+    GET<br>
+    --shows movie list
+    <code>"{
+        title: 'princess mononoke',
+        description: '1997; shows the struggle between humans and the forest gods',
+        director: {
+            name:'Hayao Miyazaki',
+            description: 'an internationally acclaimed anime director who also founded studio ghibli'
+        },
+        genre: {
+            name: 'animation',
+            description: 'A film technique to make still images move'
+        },
+    },
+    {
+        title: 'american mary',
+        description: 'a medical student resorts to offering body modification services to ease financial troubles, seeks revenge on those who wronged her',
+        director: {
+            name: 'Jen [&] Sylvia Soska',
+            description: 'also known as the soska sisters or the twins; they are twin sisters who collaborate in directing horror-focused films',
+        },
+        genre: {
+            name: 'horror',
+            description: 'A category of film meant to scare the viewer'
+        },
+    },
+    {
+        title: 'deathproof',
+        description: '2007; inspired by low-budge grindhouse films, shows the story of a stuntman who uses his modified car to murder women',
+        director: {
+            name: 'Quentin Tarantino',
+            description: 'film director focused on stylized violence',
+        },
+        genre: {
+            name: 'slasher',
+            description: 'A subgenre of horror known for consistent tropes'
+        },
+    }"</code><br><br>
+
+    <h6>/moviess/:title</h6><br>
+    GET<br>
+    --shows json data for one movie<br>
+    <code> {
+        title: 'princess mononoke',
+        description: '1997; shows the struggle between humans and the forest gods',
+        director: {
+            name:'Hayao Miyazaki',
+            description: 'an internationally acclaimed anime director who also founded studio ghibli'
+        },
+        genre: {
+            name: 'animation',
+            description: 'A film technique to make still images move'
+        },
+    }</code><br><br>
+
+    <h6>/movies/genre/:genreName</h6><br>
+    GET<br>
+    --shows info about a single genre<br>
+    <code>{
+        "name": "slasher"
+        "description": "A subgenre of horror known for consistent tropes"
+    }
+    </code><br><br>
+
+    <h6>/movies/director/:directorName</h6><br>
+    GET<br>
+    --shows info about a single director<br>
+    <code>{
+        name:'Hayao Miyazaki',
+        description: 'an internationally acclaimed anime director who also founded studio ghibli'
+    }</code><br><br>
+
+    <h6>/users/:id/:movieTitle</h6><br>
+    DELETE<br>
+    --deletes a movie from a user's favorites list<br>
+    <code>/users/:id/:movieTitle</code><br><br>
+
+    <h6>/users/:id</h6><br>
+    DELETE<br>
+    --deletes a user from the database <br>
+    <code>/users/:id</code><br><br>
+   
+
+
+
+
+
+
+
 </body>
 </html>
 
