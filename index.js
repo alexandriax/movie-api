@@ -5,6 +5,12 @@ const express = require('express');
 
 const app = express();
 
+const mongoose = require('mongoose');
+const models = require('./models.js');
+
+const Movies = models.Movie;
+const Users = models.User;
+
 
 //static
 
