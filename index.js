@@ -90,17 +90,21 @@ app.get('/', (req, res) => {
 
 
 // CREATE
-app.post('/users', (req, res) => {
-    const newUser = req.body;
 
-    if (newUser.name) {
-        newUser.id = uuid.v4();
-        users.push(newUser);
-        res.status(201).json(newUser)
-    } else {
-        res.status(400).send('users need names')
-    }
+// add a movie to a user's list of favorites
+app.post('/users/:username/movies/:MovieID', async (req, res) => {
+    await Users.findOneAndUpdate({username: req.params.username}, {
+        $push: { favoriteMovies: req.params.MovieID}
+    },
+{ new: true })
+.then((updatedUser) => {
+    res.json(updatedUser);
 })
+.catch((err) => {
+    console.error(err);
+    res.status(500).send('error: ' + err);
+});
+});
 
 app.post('/users/:id/:movieTitle', (req, res) => {
     const { id, movieTitle } = req.params;
