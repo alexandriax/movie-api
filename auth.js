@@ -1,3 +1,6 @@
+const passport = require('passport');
+
+require('./passport');
 // POST login
 
 module.exports = (router) => {
