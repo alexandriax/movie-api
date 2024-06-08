@@ -1,7 +1,7 @@
 const express = require('express');
-  morgan = require('morgan');
-  bodyParser = require('body-parser'),
-  uuid = require('uuid');
+const morgan = require('morgan');
+const bodyParser = require('body-parser');
+const uuid = require('uuid');
 
 const app = express();
 
@@ -20,9 +20,9 @@ mongoose.connect('mongodb://localhost:27017/mooviesDB', {
 //static
 
 app.use(express.static('public'));
-
 app.use(morgan('common'));
 app.use(bodyParser.json());
+
 
 let users = [
     {
@@ -77,8 +77,6 @@ let movies = [
         },
     }
 
-    //continue top ten
-
 
 ];
 
@@ -106,19 +104,6 @@ app.post('/users/:username/movies/:MovieID', async (req, res) => {
 });
 });
 
-app.post('/users/:id/:movieTitle', (req, res) => {
-    const { id, movieTitle } = req.params;
-    const updatedUser = req.body;
-
-    let user = users.find(user => user.id == id);
-
-    if (user) {
-        user.favoriteMovies.push(movieTitle);
-        res.status(200).send(`${movieTitle} has been added to user ${id}'s array`);;
-    } else {
-        res.status(400).send('user not found')
-    }
-})
 //add a user
 /* expect JSON like:
 {
@@ -245,12 +230,6 @@ app.get('/users', async (req, res) => {
       });
 });
 
-    if (user) {
-        user.favoriteMovies = user.favoriteMovies.filter( title => title !== movieTitle);
-        res.status(200).send(`${movieTitle} has been removed from user ${id}'s array`);;
-    } else {
-        res.status(400).send('user not found')
-    }
 app.get('/users/:username', async (req, res) => {
     await Users.findOne({username: req.params.username})
       .then((user) => {
@@ -278,14 +257,7 @@ app.delete('/users/:username/movies/:MovieID', async (req, res) => {
 });
 });
 
-    let user = users.find(user => user.id == id);
 
-    if (user) {
-        users = users.filter( user => user.id != id);
-        res.status(200).send(` user ${id} has been deleted`);;
-    } else {
-        res.status(400).send('user not found')
-    }
 app.delete('/users/:username', async (req, res) => {
     await Users.findOneAndDelete({username: req.params.username})
     .then((user) => {
