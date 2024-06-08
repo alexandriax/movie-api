@@ -178,8 +178,25 @@ app.put('/users/:username', async (req, res) => {
 
 
 // READ
-app.get('/movies', (req, res) => {
-    res.status(200).json(movies);
+
+
+app.get('/movies', async (req, res) => {
+    try {
+        const movies = await Movies.find();
+        const formattedMovies = movies.map(movie => ({
+            title: movie.title,
+            description: movie.description,
+            genre: movie.genre,
+            imagePath: movie.imagePath,
+            featured: movie.featured,
+            _id: movie._id
+        }));
+        res.status(200).json(formattedMovies);
+    } 
+    catch(err){
+        console.error(err);
+        res.status(500).send('error: ' + err);
+    }
 });
 
 app.get('/movies/:title', (req, res) => {
