@@ -251,6 +251,15 @@ app.get('/users', async (req, res) => {
     } else {
         res.status(400).send('user not found')
     }
+app.get('/users/:username', async (req, res) => {
+    await Users.findOne({username: req.params.username})
+      .then((user) => {
+        res.status(201).json(user);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send('error: ' + err);
+      });
 });
 
 app.delete('/users/:id', (req, res) => {
