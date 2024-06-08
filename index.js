@@ -233,11 +233,6 @@ app.get('/movies/director/:directorName', (req, res) => {
     }
 }); 
 
-// DELETE
-app.delete('/users/:id/:movieTitle', (req, res) => {
-    const { id, movieTitle } = req.params;
-
-    let user = users.find(user => user.id == id);
 // get all users
 app.get('/users', async (req, res) => {
     await Users.find()
