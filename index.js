@@ -155,11 +155,6 @@ app.post('/users', async (req, res) => {
 });
 
 // UPDATE
-app.put('/users/:id', (req, res) => {
-    const { id } = req.params;
-    const updatedUser = req.body;
-
-    let user = users.find(user => user.id == id);
 
 // update a user's info by username
 app.put('/users/:username', async (req, res) => {
