@@ -161,12 +161,19 @@ app.put('/users/:id', (req, res) => {
 
     let user = users.find(user => user.id == id);
 
-    if (user) {
-        user.name = updatedUser.name;
-        res.status(200).json(user);
-    } else {
-        res.status(400).send('user not found')
-    }
+// update a user's info by username
+app.put('/users/:username', async (req, res) => {
+    await Users.findOneAndUpdate({username: req.params.username}, {$set:
+        {
+            username: req.body.username,
+            password: req.body.password,
+            email: req.body.email,
+            birthday: req.body.birthday
+        }
+    },
+{ new: true }) // makes sure updated document is returned
+.then((updatedUser) => {
+    res.json(updatedUser);
 })
 
 
