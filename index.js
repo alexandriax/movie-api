@@ -238,6 +238,17 @@ app.delete('/users/:id/:movieTitle', (req, res) => {
     const { id, movieTitle } = req.params;
 
     let user = users.find(user => user.id == id);
+// get all users
+app.get('/users', async (req, res) => {
+    await Users.find()
+      .then((users) => {
+        res.status(201).json(users);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send('error: ' + err);
+      });
+});
 
     if (user) {
         user.favoriteMovies = user.favoriteMovies.filter( title => title !== movieTitle);
