@@ -170,6 +170,11 @@ app.put('/users/:username', async (req, res) => {
 .then((updatedUser) => {
     res.json(updatedUser);
 })
+.catch((err) => {
+    console.error(err);
+    res.status(500).send('error: ' + err);
+  })
+});
 
 
 // READ
