@@ -262,8 +262,21 @@ app.get('/users/:username', async (req, res) => {
       });
 });
 
-app.delete('/users/:id', (req, res) => {
-    const { id } = req.params;
+// DELETE
+
+app.delete('/users/:username/movies/:MovieID', async (req, res) => {
+    await Users.findOneAndUpdate({username: req.params.username}, {
+        $pull: { favoriteMovies: req.params.MovieID}
+    },
+{ new: true })
+.then((updatedUser) => {
+    res.json(updatedUser);
+})
+.catch((err) => {
+    console.error(err);
+    res.status(500).send('error: ' + err);
+});
+});
 
     let user = users.find(user => user.id == id);
 
