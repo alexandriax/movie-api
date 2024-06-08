@@ -119,6 +119,40 @@ app.post('/users/:id/:movieTitle', (req, res) => {
         res.status(400).send('user not found')
     }
 })
+//add a user
+/* expect JSON like:
+{
+    ID: integer,
+    username: string,
+    password: string,
+    email: string,
+    birthday: date
+}*/
+app.post('/users', async (req, res) => {
+    await Users.findOne({username: req.body.username })
+      .then((user) => {
+        if (user) {
+            return res.status(400).send(req.body.username + 'already exists');
+        } else {
+            Users
+              .create({
+                username: req.body.username,
+                password: req.body.password,
+                email: req.body.email,
+                birthday: req.body.birthday
+            })
+              .then((user) =>{res.status(201).json(user) })
+              .catch((error) => {
+                console.error(error);
+                res.status(500).send('error:' + error);
+              })
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).send('error:' + error);
+      });
+});
 
 // UPDATE
 app.put('/users/:id', (req, res) => {
