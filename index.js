@@ -30,7 +30,7 @@ let auth = require('./auth')(app);
 const passport = require('passport');
 require('./passport');
 
-
+const { check, validationResult } = require('express-validator');
 let users = [
     {
         name: 'ashley',
