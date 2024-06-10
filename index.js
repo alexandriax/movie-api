@@ -120,7 +120,20 @@ app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { sess
     email: string,
     birthday: date
 }*/
-app.post('/users', async (req, res) => {
+app.post('/users', [
+    check('username', 'Username is required').isLength({min: 5}),
+    check('username', 'Username contains invalid characters').isAlphanumeric(),
+    check('password', 'Password is required').not().isEmpty(),
+    check('email', 'Email does not appear to be valid').isEmail() ],
+    async (req, res) => {
+
+    let errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        console.log('validation errors:', errors.array());
+        return res.status(422).json({errors: errors.array() });
+    }
+
     let hashedPassword = Users.hashPassword(req.body.password);
     await Users.findOne({username: req.body.username })
       .then((user) => {
@@ -150,7 +163,20 @@ app.post('/users', async (req, res) => {
 // UPDATE
 
 // update a user's info by username
-app.put('/users/:username', passport.authenticate('jwt', { session: false }), async (req, res) => {
+app.put('/users/:username', passport.authenticate('jwt', { session: false }),
+[
+    check('username', 'username is required').isLength({min: 5}),
+    check('username', 'username contains invalid characters').isAlphanumeric(),
+    check('password', 'password is required').not().isEmpty(),
+    check('email', 'email does not appear to be valid').isEmail()
+],
+     async (req, res) => {
+
+    let errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+            return res.status(422).json({errors: errors.array() });
+    }
 
     if(req.user.Username !== req.params.Username){
         return res.status(400).send('permission denied');
