@@ -2,6 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const uuid = require('uuid');
+const cors = require('cors');
 
 const app = express();
 
@@ -22,6 +23,8 @@ mongoose.connect('mongodb://localhost:27017/mooviesDB', {
 app.use(express.static('public'));
 app.use(morgan('common'));
 app.use(bodyParser.json());
+
+app.use(cors());
 
 let auth = require('./auth')(app);
 const passport = require('passport');
