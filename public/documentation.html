@@ -24,116 +24,174 @@
     <h6>/users</h6> <br>
     POST <br>
     --creates new user <br>
-    <code>{
+    <code>
+    {
         "name": "jim",
-        "favoriteMovies": [],
-    }</code> <br><br>
-
+        "favoriteMovies": []
+    }
+    </code> <br><br>
 
     <h6>/users/:id/:movieTitle</h6><br>
     POST<br>
     --adds movie to user's favorite movies <br>
-    <code>"/users/605c4325de8d4ca9bbda3c7fff3e70bd/The%20Matrix</code> <br><br>
+    <code>
+    Users.create({
+        username: req.body.username,
+        password: req.body.password,
+        email: req.body.email,
+        birthday: req.body.birthday
+    })
+    .then(function(user) {
+        res.status(201).json(user);
+    })
+    .catch(function(error) {
+        console.error(error);
+        res.status(500).send('error:' + error);
+    });
+    </code> <br><br>
 
-    <h6>/users/:id</h6><br>
+    <h6>/users/:username</h6><br>
     PUT <br>
-    --updates user with uuid <br>
-    <code>{
-        "name": "jim",
-        "favoriteMovies": [],
-        "id": "605c4325-de8d-4ca9-bbda-3c7fff3e70bd"
-    }</code><br><br>
+    --updates user by username <br>
+    <code>
+    app.put('/users/:username', passport.authenticate('jwt', { session: false }), function(req, res) {
+        if (req.user.Username !== req.params.Username) {
+            return res.status(400).send('permission denied');
+        }
+        Users.findOneAndUpdate({ username: req.params.username }, {
+            $set: {
+                username: req.body.username,
+                password: req.body.password,
+                email: req.body.email,
+                birthday: req.body.birthday
+            }
+        }, { new: true }) // makes sure updated document is returned
+        .then(function(updatedUser) {
+            res.json(updatedUser);
+        })
+        .catch(function(err) {
+            console.error(err);
+            res.status(500).send('error: ' + err);
+        });
+    });
+    </code><br><br>
 
     <h6>/movies</h6><br>
     GET<br>
     --shows movie list
-    <code>"{
-        title: 'princess mononoke',
-        description: '1997; shows the struggle between humans and the forest gods',
-        director: {
-            name:'Hayao Miyazaki',
-            description: 'an internationally acclaimed anime director who also founded studio ghibli'
-        },
-        genre: {
-            name: 'animation',
-            description: 'A film technique to make still images move'
-        },
-    },
-    {
-        title: 'american mary',
-        description: 'a medical student resorts to offering body modification services to ease financial troubles, seeks revenge on those who wronged her',
-        director: {
-            name: 'Jen [&] Sylvia Soska',
-            description: 'also known as the soska sisters or the twins; they are twin sisters who collaborate in directing horror-focused films',
-        },
-        genre: {
-            name: 'horror',
-            description: 'A category of film meant to scare the viewer'
-        },
-    },
-    {
-        title: 'deathproof',
-        description: '2007; inspired by low-budge grindhouse films, shows the story of a stuntman who uses his modified car to murder women',
-        director: {
-            name: 'Quentin Tarantino',
-            description: 'film director focused on stylized violence',
-        },
-        genre: {
-            name: 'slasher',
-            description: 'A subgenre of horror known for consistent tropes'
-        },
-    }"</code><br><br>
+    <code>
+    app.get('/movies', passport.authenticate('jwt', { session: false }), function(req, res) {
+        Movies.find()
+        .then(function(movies) {
+            var formattedMovies = movies.map(function(movie) {
+                return {
+                    title: movie.title,
+                    description: movie.description,
+                    genre: movie.genre,
+                    imagePath: movie.imagePath,
+                    featured: movie.featured,
+                    _id: movie._id
+                };
+            });
+            res.status(200).json(formattedMovies);
+        })
+        .catch(function(err) {
+            console.error(err);
+            res.status(500).send('error: ' + err);
+        });
+    });
+    </code><br><br>
 
-    <h6>/moviess/:title</h6><br>
+    <h6>/movies/:title</h6><br>
     GET<br>
     --shows json data for one movie<br>
-    <code> {
-        title: 'princess mononoke',
-        description: '1997; shows the struggle between humans and the forest gods',
-        director: {
-            name:'Hayao Miyazaki',
-            description: 'an internationally acclaimed anime director who also founded studio ghibli'
-        },
-        genre: {
-            name: 'animation',
-            description: 'A film technique to make still images move'
-        },
-    }</code><br><br>
+    <code>
+    app.get('/movies/:title', passport.authenticate('jwt', { session: false }), function(req, res) {
+        var title = req.params.title;
+        var movie = movies.find(function(movie) {
+            return movie.title === title;
+        });
+    
+        if (movie) {
+            res.status(200).json(movie);
+        } else {
+            res.status(400).send('movie not found');
+        }
+    });
+    </code><br><br>
 
     <h6>/movies/genre/:genreName</h6><br>
     GET<br>
     --shows info about a single genre<br>
-    <code>{
-        "name": "slasher"
-        "description": "A subgenre of horror known for consistent tropes"
-    }
+    <code>
+    app.get('/movies/genre/:genreName', passport.authenticate('jwt', { session: false }), function(req, res) {
+        var genreName = req.params.genreName;
+        var genre = movies.find(function(movie) {
+            return movie.genre.name === genreName;
+        }).genre;
+    
+        if (genre) {
+            res.status(200).json(genre);
+        } else {
+            res.status(400).send('genre not found');
+        }
+    });
     </code><br><br>
 
     <h6>/movies/director/:directorName</h6><br>
     GET<br>
     --shows info about a single director<br>
-    <code>{
-        name:'Hayao Miyazaki',
-        description: 'an internationally acclaimed anime director who also founded studio ghibli'
-    }</code><br><br>
+    <code>
+    app.get('/movies/director/:directorName', passport.authenticate('jwt', { session: false }), function(req, res) {
+        var directorName = req.params.directorName;
+        var movie = movies.find(function(movie) {
+            return movie.director.name === directorName;
+        });
+        if (movie) {
+            res.status(200).json(movie);
+        } else {
+            res.status(400).send('director not found');
+        }
+    });
+    </code><br><br>
 
     <h6>/users/:id/:movieTitle</h6><br>
     DELETE<br>
     --deletes a movie from a user's favorites list<br>
-    <code>/users/:id/:movieTitle</code><br><br>
+    <code>
+    app.delete('/users/:username/movies/:MovieID', passport.authenticate('jwt', { session: false }), function(req, res) {
+        Users.findOneAndUpdate({ username: req.params.username }, {
+            $pull: { favoriteMovies: req.params.MovieID }
+        }, { new: true })
+        .then(function(updatedUser) {
+            res.json(updatedUser);
+        })
+        .catch(function(err) {
+            console.error(err);
+            res.status(500).send('error: ' + err);
+        });
+    });
+    </code><br><br>
 
     <h6>/users/:username</h6><br>
     DELETE<br>
     --deletes a user from the database <br>
-    <code>app.delete('/users/:username')</code><br><br>
-   
-
-
-
-
-
-
-
+    <code>
+    app.delete('/users/:username', passport.authenticate('jwt', { session: false }), function(req, res) {
+        Users.findOneAndDelete({ username: req.params.username })
+        .then(function(user) {
+            if (!user) {
+                res.status(400).send(req.params.username + ' was not found');
+            } else {
+                res.status(200).send(req.params.username + ' was deleted');
+            }
+        })
+        .catch(function(err) {
+            console.error(err);
+            res.status(500).send('error: ' + err);
+        });
+    });
+    </code><br><br>
 </body>
 </html>
 
