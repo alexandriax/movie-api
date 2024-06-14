@@ -12,8 +12,13 @@ const models = require('./models.js');
 const Movies = models.Movie;
 const Users = models.User;
 
-// connects mongoose to database
-mongoose.connect('mongodb://localhost:27017/mooviesDB', { 
+// connects mongoose to database locally
+/* mongoose.connect('mongodb://localhost:27017/mooviesDB', { 
+    useNewUrlParser: true, useUnifiedTopology: true   
+}); */
+
+// connects mongoose to database online
+mongoose.connect('process.env.CONNECTION_URI', { 
     useNewUrlParser: true, useUnifiedTopology: true   
 });
 
