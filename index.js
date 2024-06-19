@@ -8,20 +8,25 @@ const app = express();
 
 const mongoose = require('mongoose');
 const models = require('./models.js');
+// gpt suggestion
+require('dotenv').config();
+
+console.log('connection URI:' , process.env.CONNECTION_URI);
 
 const Movies = models.Movie;
 const Users = models.User;
 
 // connects mongoose to database locally
-/* mongoose.connect('mongodb://localhost:27017/mooviesDB', { 
+ /*mongoose.connect('mongodb://localhost:27017/mooviesDB', { 
     useNewUrlParser: true, useUnifiedTopology: true   
 }); */
 
 // connects mongoose to database online
-mongoose.connect('process.env.CONNECTION_URI', { 
-    useNewUrlParser: true, useUnifiedTopology: true   
-});
+mongoose.connect( 'mongodb+srv://allywally:LDR1358iqoa%21%21@firstcluster.c8pne3j.mongodb.net/myFlixDB?retryWrites=true&w=majority' , {  
+}); 
 
+
+//
 
 //static
 
@@ -97,6 +102,7 @@ let movies = [
 app.get('/', (req, res) => {
     res.send('welcome!')
 });
+
 
 
 // CREATE
