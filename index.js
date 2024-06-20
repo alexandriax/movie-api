@@ -22,7 +22,10 @@ const Users = models.User;
 }); */
 
 // connects mongoose to database online
-mongoose.connect( 'mongodb+srv://allywally:LDR1358iqoa!!@firstcluster.c8pne3j.mongodb.net/myFlixDB?retryWrites=true&w=majority'); 
+mongoose.connect( 'mongodb+srv://allywally:LDR1358iqoa!!@firstcluster.c8pne3j.mongodb.net/myFlixDB?retryWrites=true&w=majority', 
+    { useNewUrlParser: true, useUnifiedTopology: true
+
+}); 
 
 
 //
