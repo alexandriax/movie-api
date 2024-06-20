@@ -11,8 +11,6 @@ const models = require('./models.js');
 // gpt suggestion
 require('dotenv').config();
 
-console.log('connection URI:' , process.env.CONNECTION_URI);
-
 const Movies = models.Movie;
 const Users = models.User;
 
