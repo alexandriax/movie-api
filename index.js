@@ -214,7 +214,7 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }),
 // READ
 
 
-app.get('/movies', /*passport.authenticate('jwt', { session: false }),*/ async (req, res) => {
+app.get('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         const movies = await Movies.find();
         const formattedMovies = movies.map(movie => ({
