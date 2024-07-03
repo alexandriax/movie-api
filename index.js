@@ -100,7 +100,7 @@ let movies = [
 // GET requests
 
 app.get('/', (req, res) => {
-    res.send('welcome!')
+    res.send('hi!')
 });
 
 
