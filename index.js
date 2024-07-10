@@ -60,6 +60,7 @@ let movies = [
     {
         title: 'princess mononoke',
         description: '1997; shows the struggle between humans and the forest gods',
+        image: 'https://miro.medium.com/v2/resize:fit:720/format:webp/1*ga8kbfjjbpIQ7FpiKJrGGA.jpeg',
         director: {
             name:'Hayao Miyazaki',
             description: 'an internationally acclaimed anime director who also founded studio ghibli'
@@ -72,6 +73,7 @@ let movies = [
     {
         title: 'american mary',
         description: 'a medical student resorts to offering body modification services to ease financial troubles, seeks revenge on those who wronged her',
+        image: 'https://static.wikia.nocookie.net/headhuntershorrorhouse/images/e/e4/Mary_Mason.jpg/revision/latest/scale-to-width-down/225?cb=20230215143548',
         director: {
             name: 'Jen & Sylvia Soska',
             description: 'also known as the soska sisters or the twins; they are twin sisters who collaborate in directing horror-focused films',
@@ -84,6 +86,7 @@ let movies = [
     {
         title: 'deathproof',
         description: '2007; inspired by low-budge grindhouse films, shows the story of a stuntman who uses his modified car to murder women',
+        image: 'https://resizing.flixster.com/9WTXozXWG-XAlTMgO_uWZfMkWok=/300x300/v2/https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p173259_k_h9_ac.jpg',
         director: {
             name: 'Quentin Tarantino',
             description: 'film director focused on stylized violence',
