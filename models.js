@@ -12,7 +12,7 @@ let movieSchema = mongoose.Schema({
         name: String,
         bio: String
     },
-    imagePath: String,
+    image: String,
     featured: Boolean
 });
 
