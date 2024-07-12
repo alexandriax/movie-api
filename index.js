@@ -223,7 +223,7 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), async (req,
         const formattedMovies = movies.map(movie => ({
             title: movie.title,
             description: movie.description,
-            director: movie.director.name ,
+            director: movie.director,
             genre: movie.genre,
             image: movie.image,
             featured: movie.featured,
