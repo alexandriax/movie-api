@@ -3,13 +3,14 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const uuid = require('uuid');
 const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
 
 const mongoose = require('mongoose');
 const models = require('./models.js');
 // gpt suggestion
-require('dotenv').config();
+
 
 const Movies = models.Movie;
 const Users = models.User;
@@ -23,7 +24,11 @@ const Users = models.User;
 mongoose.connect( process.env.CONNECTION_URI , 
     { useNewUrlParser: true, useUnifiedTopology: true
 
-}); 
+})
+.then(() => console.log('connected to mongoDB'))
+.catch(err => console.error('failed to connect')) 
+
+console.log('MongoDB URI:', process.env.CONNECTION_URI)
 
 
 //
@@ -134,6 +139,7 @@ app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { sess
     email: string,
     birthday: date
 }*/
+
 app.post('/users', [
     check('username', 'Username is required').isLength({min: 5}),
     check('username', 'Username contains invalid characters').isAlphanumeric(),
