@@ -198,7 +198,7 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }),
             return res.status(422).json({errors: errors.array() });
     }
 
-    if(req.user.Username !== req.params.Username){
+    if(req.user.username !== req.params.username){
         return res.status(400).send('permission denied');
     }
     await Users.findOneAndUpdate({username: req.params.username}, {$set:
@@ -227,13 +227,13 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), async (req,
     try {
         const movies = await Movies.find();
         const formattedMovies = movies.map(movie => ({
+            id: movie._id,
             title: movie.title,
+            image: movie.image,
             description: movie.description,
             director: movie.director,
             genre: movie.genre,
-            image: movie.image,
-            featured: movie.featured,
-            _id: movie._id
+            featured: movie.featured
         }));
         res.status(200).json(formattedMovies);
     } 
