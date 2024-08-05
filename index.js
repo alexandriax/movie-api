@@ -243,6 +243,20 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), async (req,
     }
 });
 
+app.get('/movies/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+        const movie = await Movies.findById(req.params.id);
+        if (!movie) {
+            return res.status(404).send('Movie not found');
+        }
+        res.status(200).json(movie);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+    }
+});
+
+
 app.get('/movies/:title', passport.authenticate('jwt', { session: false }), (req, res) => {
     const { title } = req.params;
     const movie = movies.find(movie => movie.title === title );
@@ -276,6 +290,34 @@ app.get('/movies/director/:directorName', passport.authenticate('jwt', { session
         res.status(400).send('director not found')
     }
 }); 
+
+app.get('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    const { search } = req.query;
+    let query = {};
+    if (search) {
+        query = {
+            title: { $regex: search, $options: 'i' } 
+        };
+    }
+
+    try {
+        const movies = await Movies.find(query);
+        const formattedMovies = movies?.map(movie => ({
+            id: movie.id,
+            title: movie.title,
+            image: movie.image,
+            description: movie.description,
+            director: movie.director,
+            genre: movie.genre,
+            featured: movie.featured
+        }));
+        res.status(200).json(formattedMovies);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('error: ' + err);
+    }
+});
+
 
 /* 
 // get all users
