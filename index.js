@@ -180,27 +180,6 @@ app.post('/users', [
       });
 });
 
-app.post('/login', (req, res) => {
-    passport.authenticate('local', { session: false }, (error, user, info) => {
-        if (error || !user) {
-            return res.status(400).json({
-                message: 'Invalid username or password',
-                user: user
-            });
-        }
-        
-        req.login(user, { session: false }, (error) => {
-            if (error) {
-                return res.send(error);
-            }
-
-            // Generate JWT token for the user
-            const token = generateJWTToken(user.toJSON());
-            return res.json({ user, token });
-        });
-    })(req, res);
-});
-
 // UPDATE
 
 // update a user's info by username
