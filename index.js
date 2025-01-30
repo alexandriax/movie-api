@@ -3,7 +3,9 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const uuid = require('uuid');
 const cors = require('cors');
-require('dotenv').config();
+
+require('dotenv').config({ path: './uri.env' });
+console.log('MongoDB URI:', process.env.CONNECTION_URI);
 
 const app = express();
 
@@ -227,7 +229,7 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), async (req,
     try {
         const movies = await Movies.find();
         const formattedMovies = movies.map(movie => ({
-            id: movie._id,
+            id: movie.id,
             title: movie.title,
             image: movie.image,
             description: movie.description,
@@ -318,6 +320,22 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), async (req,
     }
 });
 
+// Get a user's favorite movies
+app.get('/users/:username/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    await Users.findOne({ username: req.params.username })
+        .populate('favoriteMovies') //populates movie info instead of ids
+        .then((user) => {
+            if (!user) {
+                return res.status(404).send('User not found');
+            }
+            res.status(200).json(user.favoriteMovies);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
+});
+
 
 /* 
 // get all users
@@ -335,7 +353,7 @@ app.get('/users', async (req, res) => {
 app.get('/users/:username', passport.authenticate('jwt', { session: false }), async (req, res) => {
     await Users.findOne({username: req.params.username})
       .then((user) => {
-        res.status(201).json(user);
+        res.status(200).json(user);
       })
       .catch((err) => {
         console.error(err);
