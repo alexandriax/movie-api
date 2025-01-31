@@ -1,12 +1,12 @@
-
+const jwtSecret = 'your_jwt_secret';
 
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
-require('dotenv').config();
+
 require('./passport');
-const jwtSecret = process.env.SECRET_KEY;
+
 let generateJWTToken = (user) => {
-    return jwt.sign({ _id: user._id || user.id}, jwtSecret, {
+    return jwt.sign({ userId: user._id || user.id}, jwtSecret, {
         subject: String(user.username),
         expiresIn: '7d',
         algorithm: 'HS256'

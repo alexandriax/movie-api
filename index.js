@@ -362,32 +362,20 @@ app.get('/users/:username', passport.authenticate('jwt', { session: false }), as
 });
 
 app.get('/users/me', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    console.log('🔹 Incoming request to /users/me');
-    console.log('🔹 Headers:', req.headers);
-    console.log('🔹 Authenticated user:', req.user);
-
     try {
-        if (!req.user || !req.user._id) {
-            console.error('🔹 req.user is missing or empty.');
-            return res.status(400).json({ message: 'Invalid user', user: req.user });
-        }
-
-        const user = await Users.findById(req.user._id).populate('favoriteMovies');
-        console.log('🔹 User fetched from DB:', user);
-
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        res.status(200).json(user);
+      const user = await Users.findById(req.user._id)
+        .populate('favoriteMovies'); // ✅ Populates the movie details
+  
+      if (!user) {
+        return res.status(404).send('User not found');
+      }
+      res.status(200).json(user);
     } catch (err) {
-        console.error('Error fetching user:', err);
-        res.status(500).json({ message: 'Server error' });
+      console.error(err);
+      res.status(500).send('Error: ' + err);
     }
 });
 
-  
-  
   
 
 // DELETE
