@@ -361,6 +361,23 @@ app.get('/users/:username', passport.authenticate('jwt', { session: false }), as
       });
 });
 
+app.get('/users/me', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+      const user = await Users.findById(req.user._id)
+        .populate('favoriteMovies'); // ✅ Populates the movie details
+  
+      if (!user) {
+        return res.status(404).send('User not found');
+      }
+      res.status(200).json(user);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    }
+  });
+  
+  
+
 // DELETE
 
 app.delete('/users/:username/movies/:MovieID', passport.authenticate('jwt', { session: false }), async (req, res) => {
