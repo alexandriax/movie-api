@@ -7,6 +7,8 @@ let Users = Models.User,
   JWTStrategy = passportJWT.Strategy,
   ExtractJWT = passportJWT.ExtractJwt;
 
+require('dotenv').config();
+
 passport.use(
     new LocalStrategy(
         {
@@ -42,13 +44,17 @@ passport.use(
 
 passport.use(new JWTStrategy({
     jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-    secretOrKey: 'your_jwt_secret'
+    secretOrKey: process.env.SECRET_KEY
 }, async (jwtPayload, callback) => {
+    console.log('🔹 Decoded JWT payload:', jwtPayload); // ✅ Log payload
+
     return await Users.findById(jwtPayload._id)
       .then((user) => {
+        console.log('🔹 User found in DB:', user); // ✅ Log user from DB
         return callback(null, user);
       })
       .catch((error) => {
-        return callback(error)
+        console.error('🔹 Error finding user:', error); // ✅ Log errors
+        return callback(error);
       });
 }));
