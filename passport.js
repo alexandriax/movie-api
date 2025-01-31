@@ -46,15 +46,16 @@ passport.use(new JWTStrategy({
     jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
     secretOrKey: process.env.SECRET_KEY
 }, async (jwtPayload, callback) => {
-    console.log('🔹 Decoded JWT payload:', jwtPayload); // ✅ Log payload
+    console.log('🔹 Decoded JWT payload:', jwtPayload); // Debugging log
 
     return await Users.findById(jwtPayload._id)
       .then((user) => {
-        console.log('🔹 User found in DB:', user); // ✅ Log user from DB
+        console.log('🔹 User found in DB:', user); // Debugging log
         return callback(null, user);
       })
       .catch((error) => {
-        console.error('🔹 Error finding user:', error); // ✅ Log errors
+        console.error('🔹 Error finding user:', error);
         return callback(error);
       });
 }));
+

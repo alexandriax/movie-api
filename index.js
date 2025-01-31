@@ -362,38 +362,30 @@ app.get('/users/:username', passport.authenticate('jwt', { session: false }), as
 });
 
 app.get('/users/me', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    console.log('🔹 Authenticated user:', req.user); // Debugging log
-  
+    console.log('🔹 Incoming request to /users/me');
+    console.log('🔹 Headers:', req.headers);
+    console.log('🔹 Authenticated user:', req.user);
+
     try {
-      if (!req.user || !req.user._id) {
-        console.error('🔹 req.user is missing or empty. Manual fetch required.');
-        
-        const token = req.headers.authorization?.split(' ')[1];
-  
-        try {
-          const decoded = jwt.verify(token, process.env.SECRET_KEY);
-          console.log('🔹 Manually Decoded JWT:', decoded);
-  
-          req.user = await Users.findById(decoded._id); // ✅ Fetch the user manually
-          console.log('🔹 Manually Retrieved User:', req.user);
-        } catch (err) {
-          console.error('🔹 JWT Verification Error:', err);
-          return res.status(401).json({ message: 'Invalid token' });
+        if (!req.user || !req.user._id) {
+            console.error('🔹 req.user is missing or empty.');
+            return res.status(400).json({ message: 'Invalid user', user: req.user });
         }
-      }
-  
-      if (!req.user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      console.log('🔹 Final user returned:', req.user);
-      res.status(200).json(req.user);
+
+        const user = await Users.findById(req.user._id).populate('favoriteMovies');
+        console.log('🔹 User fetched from DB:', user);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json(user);
     } catch (err) {
-      console.error('Error fetching user:', err);
-      res.status(500).json({ message: 'Server error' });
+        console.error('Error fetching user:', err);
+        res.status(500).json({ message: 'Server error' });
     }
-  });
-  
+});
+
   
   
   
