@@ -46,9 +46,12 @@ passport.use(new JWTStrategy({
 }, async (jwtPayload, callback) => {
     return await Users.findById(jwtPayload._id)
       .then((user) => {
+        console.log('🔹 User found in DB:', user); // Debugging log
         return callback(null, user);
       })
       .catch((error) => {
-        return callback(error)
+        console.error('🔹 Error finding user:', error);
+        return callback(error);
       });
 }));
+
