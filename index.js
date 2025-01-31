@@ -41,7 +41,7 @@ app.use(express.static('public'));
 app.use(morgan('common'));
 app.use(bodyParser.json());
 
-app.use(cors());
+app.use(cors({ origin: '*' })); 
 
 let auth = require('./auth')(app);
 const passport = require('passport');
