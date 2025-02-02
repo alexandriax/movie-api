@@ -470,16 +470,17 @@ app.post('/users/:userId/movies/:MovieID', passport.authenticate('jwt', { sessio
 
 app.get('/users/:userId/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
-        const user = await Users.findById(req.params.userId).populate('favoriteMovies');
+        const user = await Users.findById(req.params.userId).populate('favoriteMovies'); // Populate full movies
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        res.json(user.favoriteMovies);
+        res.json(user.favoriteMovies); // Now returns full movie objects
     } catch (error) {
         console.error('Error fetching favorite movies:', error);
         res.status(500).json({ message: "Internal server error" });
     }
 });
+
 
 
 
