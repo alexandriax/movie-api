@@ -194,11 +194,15 @@ app.post('/users', [
 });
 
 app.post('/login', async (req, res) => {
-    console.log("🔹 Incoming Login Request Body:", req.body);
+    console.error("🔹 Incoming Login Request Body:", req.body); // Log the request body
 
-    // Convert to lowercase to match database storage
-    const username = req.body.username;  
-    const password = req.body.password;
+    // Check if req.body is actually an object
+    if (!req.body || typeof req.body !== "object") {
+        console.error("🚨 Backend received an INVALID request body:", req.body);
+        return res.status(400).json({ message: "Invalid request format.", user: false });
+    }
+
+    const { username, password } = req.body;
 
     if (!username || !password) {
         console.error("🚨 Missing Username or Password! Received:", req.body);
@@ -206,7 +210,7 @@ app.post('/login', async (req, res) => {
     }
 
     try {
-        const user = await Users.findOne({ username });
+        const user = await Users.findOne({ username: req.body.username.toLowerCase() });
 
         if (!user) {
             console.error("🚨 User Not Found:", username);
@@ -225,8 +229,17 @@ app.post('/login', async (req, res) => {
             { expiresIn: '7d' }
         );
 
-        console.log("✅ User Authenticated:", user.username);
-        res.json({ token, user: { _id: user._id, username: user.username } });
+        console.error("✅ User Authenticated:", user.username);
+        console.log("Login Response:", {
+            token,
+            user: { _id: user._id, username: user.username },
+          });
+           // Log user authentication
+           res.json({
+            token: token,
+            userId: user._id,
+            username: user.username  // Ensure username is included in the response
+        });
 
     } catch (err) {
         console.error("🚨 Server Error:", err);
