@@ -193,7 +193,7 @@ app.post('/users', [
       });
 });
 
-app.post('/login', async (req, res) => {
+/*app.post('/login', async (req, res) => {
     console.error("Incoming Login Request Body:", req.body); // Log the request body
 
     // Check if req.body is actually an object
@@ -248,7 +248,7 @@ app.post('/login', async (req, res) => {
         res.status(500).json({ message: "Internal server error", user: false });
     }
 });
-
+*/
 
 
 
