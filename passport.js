@@ -59,20 +59,20 @@ passport.use(
 
 passport.use(new JWTStrategy({
     jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-    secretOrKey: process.env.JWT_SECRET || 'your_jwt_secret' // 🛑 Fix this! Ensure it's using the correct secret key!
+    secretOrKey: process.env.JWT_SECRET || 'your_jwt_secret' 
 }, async (jwtPayload, done) => {
-    console.log('🔹 Decoded JWT:', jwtPayload);  // Debugging log
+    console.log('Decoded JWT:', jwtPayload);  // Debugging log
 
     try {
         const user = await Users.findById(jwtPayload.userId);
         if (!user) {
-            console.log('❌ User not found in DB');
+            console.log('User not found in DB');
             return done(null, false);
         }
-        console.log('✅ User authenticated:', user.username);
+        console.log('User authenticated:', user.username);
         return done(null, user);
     } catch (error) {
-        console.error('🔹 JWT Verification Error:', error);
+        console.error('JWT Verification Error:', error);
         return done(error, false);
     }
 }));
