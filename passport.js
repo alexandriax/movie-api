@@ -40,13 +40,14 @@ passport.use(
     )
 );
 
-passport.use(new JWTStrategy({
+/*passport.use(new JWTStrategy({
     jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
     secretOrKey: 'your_jwt_secret'
 }, async (jwtPayload, callback) => {
     return await Users.findById(jwtPayload._id)
       .then((user) => {
-        console.log('🔹 User found in DB:', user); // Debugging log
+        //console.log('🔹 User found in DB:', user);
+        console.log('🔹 Decoded JWT:', jwtPayload);  // Debugging log
         return callback(null, user);
       })
       .catch((error) => {
@@ -54,4 +55,24 @@ passport.use(new JWTStrategy({
         return callback(error);
       });
 }));
+*/
 
+passport.use(new JWTStrategy({
+    jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+    secretOrKey: process.env.JWT_SECRET || 'your_jwt_secret' // 🛑 Fix this! Ensure it's using the correct secret key!
+}, async (jwtPayload, done) => {
+    console.log('🔹 Decoded JWT:', jwtPayload);  // Debugging log
+
+    try {
+        const user = await Users.findById(jwtPayload.userId);
+        if (!user) {
+            console.log('❌ User not found in DB');
+            return done(null, false);
+        }
+        console.log('✅ User authenticated:', user.username);
+        return done(null, user);
+    } catch (error) {
+        console.error('🔹 JWT Verification Error:', error);
+        return done(error, false);
+    }
+}));

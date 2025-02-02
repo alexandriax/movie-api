@@ -41,7 +41,15 @@ app.use(express.static('public'));
 app.use(morgan('common'));
 app.use(bodyParser.json());
 
-app.use(cors({ origin: '*' })); 
+app.use(cors({ 
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Authorization'],
+    credentials: true,
+ })); 
+
+ app.options('*', cors()); 
 
 let auth = require('./auth')(app);
 const passport = require('passport');
@@ -223,9 +231,56 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }),
 
 
 // READ
+app.get('/movies', (req, res, next) => {
+    console.log('🔹 Incoming Auth Header:', req.headers.authorization);
+    next();
+}, passport.authenticate('jwt', { session: false }), async (req, res) => {
+    console.log('🔹 User after Auth:', req.user);
+    console.log('🔹 Incoming Auth Header:', req.headers.authorization);
 
 
-app.get('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    if (!req.user) {
+        console.log('❌ User authentication failed');
+        return res.status(401).send('Unauthorized');
+    }
+
+    try {
+        const movies = await Movies.find();
+        res.status(200).json(movies);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+    }
+});
+
+
+/*app.get('/movies', (req, res, next) => {
+    console.log('🔹 Incoming Auth Header:', req.headers.authorization);
+    next();
+}, passport.authenticate('jwt', { session: false }), async (req, res) => {
+    console.log('🔹 User after Auth:', req.user);
+    if (!req.user) return res.status(401).send('Unauthorized');
+
+    try {
+        const movies = await Movies.find();
+        const formattedMovies = movies.map(movie => ({
+            id: movie.id,
+            title: movie.title,
+            image: movie.image,
+            description: movie.description,
+            director: movie.director,
+            genre: movie.genre,
+            featured: movie.featured
+        }));
+        res.status(200).json(formattedMovies);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+    }
+});*/
+
+
+/*app.get('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         const movies = await Movies.find();
         const formattedMovies = movies.map(movie => ({
@@ -243,7 +298,7 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), async (req,
         console.error(err);
         res.status(500).send('error: ' + err);
     }
-});
+});*/
 
 app.get('/movies/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
@@ -373,8 +428,8 @@ app.get('/users/me', passport.authenticate('jwt', { session: false }), async (re
         const token = req.headers.authorization?.split(' ')[1];
   
         try {
-          const decoded = jwt.verify(token, process.env.SECRET_KEY);
-          console.log('🔹 Manually Decoded JWT:', decoded);
+          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret' );
+          
   
           req.user = await Users.findById(decoded._id); // ✅ Fetch the user manually
           console.log('🔹 Manually Retrieved User:', req.user);

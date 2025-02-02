@@ -6,7 +6,8 @@ const passport = require('passport');
 require('./passport');
 
 let generateJWTToken = (user) => {
-    return jwt.sign({ userId: user._id || user.id}, jwtSecret, {
+    console.log('🔹 Generating JWT for:', user._id); 
+    return jwt.sign({ userId: user._id || user.id}, jwtSecret || process.env.JWT_SECRET, {
         subject: String(user.username),
         expiresIn: '7d',
         algorithm: 'HS256'
