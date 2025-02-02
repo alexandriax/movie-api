@@ -194,18 +194,18 @@ app.post('/users', [
 });
 
 app.post('/login', async (req, res) => {
-    console.error("🔹 Incoming Login Request Body:", req.body); // Log the request body
+    console.error("Incoming Login Request Body:", req.body); // Log the request body
 
     // Check if req.body is actually an object
     if (!req.body || typeof req.body !== "object") {
-        console.error("🚨 Backend received an INVALID request body:", req.body);
+        console.error("Backend received an INVALID request body:", req.body);
         return res.status(400).json({ message: "Invalid request format.", user: false });
     }
 
     const { username, password } = req.body;
 
     if (!username || !password) {
-        console.error("🚨 Missing Username or Password! Received:", req.body);
+        console.error("Missing Username or Password! Received:", req.body);
         return res.status(400).json({ message: "Username and password are required.", user: false });
     }
 
@@ -213,13 +213,13 @@ app.post('/login', async (req, res) => {
         const user = await Users.findOne({ username: req.body.username.toLowerCase() });
 
         if (!user) {
-            console.error("🚨 User Not Found:", username);
+            console.error(" User Not Found:", username);
             return res.status(400).json({ message: "Invalid username or password", user: false });
         }
 
         const isPasswordValid = bcrypt.compareSync(password, user.password);
         if (!isPasswordValid) {
-            console.error("🚨 Incorrect Password for User:", username);
+            console.error(" Incorrect Password for User:", username);
             return res.status(400).json({ message: "Invalid username or password", user: false });
         }
 
@@ -229,7 +229,7 @@ app.post('/login', async (req, res) => {
             { expiresIn: '7d' }
         );
 
-        console.error("✅ User Authenticated:", user.username);
+        console.error("User Authenticated:", user.username);
         console.log("Login Response:", {
             token,
             user: { _id: user._id, username: user.username },
@@ -237,12 +237,14 @@ app.post('/login', async (req, res) => {
            // Log user authentication
            res.json({
             token: token,
-            userId: user._id,
-            username: user.username  // Ensure username is included in the response
+            user: { 
+                _id: user._id, 
+                username: user.username 
+            }
         });
 
     } catch (err) {
-        console.error("🚨 Server Error:", err);
+        console.error("Server Error:", err);
         res.status(500).json({ message: "Internal server error", user: false });
     }
 });
@@ -400,7 +402,7 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), async (req,
         const userId = req.user._id; // Get user ID from the token
         const movieId = req.params.MovieID;
 
-        console.log(`🔹 Adding movie ${movieId} to user ${userId}`);
+        console.log(`Adding movie ${movieId} to user ${userId}`);
 
         const updatedUser = await Users.findByIdAndUpdate(
             userId,
