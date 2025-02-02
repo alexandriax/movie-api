@@ -232,15 +232,15 @@ app.put('/users/:username', passport.authenticate('jwt', { session: false }),
 
 // READ
 app.get('/movies', (req, res, next) => {
-    console.log('🔹 Incoming Auth Header:', req.headers.authorization);
+    console.log('Incoming Auth Header:', req.headers.authorization);
     next();
 }, passport.authenticate('jwt', { session: false }), async (req, res) => {
-    console.log('🔹 User after Auth:', req.user);
-    console.log('🔹 Incoming Auth Header:', req.headers.authorization);
+    console.log('User after Auth:', req.user);
+    console.log(' Incoming Auth Header:', req.headers.authorization);
 
 
     if (!req.user) {
-        console.log('❌ User authentication failed');
+        console.log('User authentication failed');
         return res.status(401).send('Unauthorized');
     }
 
@@ -254,51 +254,10 @@ app.get('/movies', (req, res, next) => {
 });
 
 
-/*app.get('/movies', (req, res, next) => {
-    console.log('🔹 Incoming Auth Header:', req.headers.authorization);
-    next();
-}, passport.authenticate('jwt', { session: false }), async (req, res) => {
-    console.log('🔹 User after Auth:', req.user);
-    if (!req.user) return res.status(401).send('Unauthorized');
-
-    try {
-        const movies = await Movies.find();
-        const formattedMovies = movies.map(movie => ({
-            id: movie.id,
-            title: movie.title,
-            image: movie.image,
-            description: movie.description,
-            director: movie.director,
-            genre: movie.genre,
-            featured: movie.featured
-        }));
-        res.status(200).json(formattedMovies);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error: ' + err);
-    }
-});*/
 
 
-/*app.get('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    try {
-        const movies = await Movies.find();
-        const formattedMovies = movies.map(movie => ({
-            id: movie.id,
-            title: movie.title,
-            image: movie.image,
-            description: movie.description,
-            director: movie.director,
-            genre: movie.genre,
-            featured: movie.featured
-        }));
-        res.status(200).json(formattedMovies);
-    } 
-    catch(err){
-        console.error(err);
-        res.status(500).send('error: ' + err);
-    }
-});*/
+
+
 
 app.get('/movies/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
@@ -376,20 +335,33 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), async (req,
 });
 
 // Get a user's favorite movies
-app.get('/users/:username/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    await Users.findOne({ username: req.params.username })
-        .populate('favoriteMovies') //populates movie info instead of ids
-        .then((user) => {
-            if (!user) {
-                return res.status(404).send('User not found');
-            }
-            res.status(200).json(user.favoriteMovies);
-        })
-        .catch((err) => {
-            console.error(err);
-            res.status(500).send('Error: ' + err);
-        });
+// Add a movie to the authenticated user's favorites
+app.post('/users/movies/:MovieID', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+        const userId = req.user._id; // Get user ID from the token
+        const movieId = req.params.MovieID;
+
+        console.log(`🔹 Adding movie ${movieId} to user ${userId}`);
+
+        const updatedUser = await Users.findByIdAndUpdate(
+            userId,
+            { $addToSet: { favoriteMovies: movieId } }, // Avoid duplicates
+            { new: true }
+        ).populate('favoriteMovies');
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json(updatedUser);
+    } catch (err) {
+        console.error('Error adding favorite movie:', err);
+        res.status(500).json({ message: 'Error adding favorite movie' });
+    }
 });
+
+
+
 
 
 /* 
@@ -457,19 +429,31 @@ app.get('/users/me', passport.authenticate('jwt', { session: false }), async (re
 
 // DELETE
 
-app.delete('/users/:username/movies/:MovieID', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    await Users.findOneAndUpdate({username: req.params.username}, {
-        $pull: { favoriteMovies: req.params.MovieID}
-    },
-{ new: true })
-.then((updatedUser) => {
-    res.json(updatedUser);
-})
-.catch((err) => {
-    console.error(err);
-    res.status(500).send('error: ' + err);
+// Remove a movie from the authenticated user's favorites
+app.delete('/users/movies/:MovieID', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+        const userId = req.user._id; // Get user ID from the token
+        const movieId = req.params.MovieID;
+
+        console.log(`🔹 Removing movie ${movieId} from user ${userId}`);
+
+        const updatedUser = await Users.findByIdAndUpdate(
+            userId,
+            { $pull: { favoriteMovies: movieId } },
+            { new: true }
+        ).populate('favoriteMovies');
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json(updatedUser);
+    } catch (err) {
+        console.error('Error removing favorite movie:', err);
+        res.status(500).json({ message: 'Error removing favorite movie' });
+    }
 });
-});
+
 
 
 app.delete('/users/:username', passport.authenticate('jwt', { session: false }), async (req, res) => {
