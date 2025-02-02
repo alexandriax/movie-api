@@ -416,7 +416,7 @@ app.get('/users/:username', passport.authenticate('jwt', { session: false }), as
       });
 });
 
-app.get('/users/:username', passport.authenticate('jwt', { session: false }), async (req, res) => {
+/*app.get('/users/:username', passport.authenticate('jwt', { session: false }), async (req, res) => {
   
     try {
       if (!req.user || !req.user._id) {
@@ -446,7 +446,7 @@ app.get('/users/:username', passport.authenticate('jwt', { session: false }), as
       console.error('Error fetching user:', err);
       res.status(500).json({ message: 'Server error' });
     }
-  });
+  });*/
   
   
   
