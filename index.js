@@ -197,7 +197,7 @@ app.post('/login', async (req, res) => {
     console.log("🔹 Incoming Login Request Body:", req.body);
 
     // Convert to lowercase to match database storage
-    const username = req.body.username.toLowerCase();  
+    const username = req.body.username;  
     const password = req.body.password;
 
     if (!username || !password) {
@@ -206,7 +206,7 @@ app.post('/login', async (req, res) => {
     }
 
     try {
-        const user = await Users.findOne({ username: new RegExp(`^${username}$`, "i") });
+        const user = await Users.findOne({ username });
 
         if (!user) {
             console.error("🚨 User Not Found:", username);
