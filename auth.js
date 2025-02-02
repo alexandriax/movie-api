@@ -17,10 +17,6 @@ let generateJWTToken = (user) => {
 // POST login
 
 module.exports = (router) => {
-    console.log("Sending Login Response:", {
-        token: token,
-        user: { _id: user._id, username: user.username }
-    });
     
     router.post('/login', (req, res) => {
         passport.authenticate('local', {session: false}, (error, user, info) => {
@@ -34,7 +30,11 @@ module.exports = (router) => {
                 if(error) {
                     res.send(error);
                 }
-                let token = generateJWTToken(user.toJSON());
+                let token = jwt.sign(
+                    { userId: user._id, username: user.username },
+                    process.env.JWT_SECRET || 'your_jwt_secret',
+                    { expiresIn: '7d' });
+                console.log("Sending Login Response:", { token, user: { _id: user._id, username: user.username } });
                 return res.json({
                     token: token,
                     user: {
