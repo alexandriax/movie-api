@@ -229,7 +229,12 @@ app.post('/login', async (req, res) => {
             { expiresIn: '7d' }
         );
 
-        console.error("✅ User Authenticated:", user.username); // Log user authentication
+        console.error("✅ User Authenticated:", user.username);
+        console.log("Login Response:", {
+            token,
+            user: { _id: user._id, username: user.username },
+          });
+           // Log user authentication
         res.json({ token, user: { _id: user._id, username: user.username } });
 
     } catch (err) {
