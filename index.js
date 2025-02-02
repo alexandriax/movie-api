@@ -416,14 +416,11 @@ app.get('/users/:username', passport.authenticate('jwt', { session: false }), as
       });
 });
 
-app.get('/users/me', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    console.log('🔹 Authenticated user:', req.user); // Debugging log
-  
-    console.log('Authenticated user:', req.user); // Add this line
+app.get('/users/:username', passport.authenticate('jwt', { session: false }), async (req, res) => {
   
     try {
       if (!req.user || !req.user._id) {
-        console.error('🔹 req.user is missing or empty. Manual fetch required.');
+        
         
         const token = req.headers.authorization?.split(' ')[1];
   
@@ -431,10 +428,10 @@ app.get('/users/me', passport.authenticate('jwt', { session: false }), async (re
           const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret' );
           
   
-          req.user = await Users.findById(decoded._id); // ✅ Fetch the user manually
-          console.log('🔹 Manually Retrieved User:', req.user);
+          req.user = await Users.findById(decoded._id); // Fetch the user manually
+          console.log('Manually Retrieved User:', req.user);
         } catch (err) {
-          console.error('🔹 JWT Verification Error:', err);
+          console.error('JWT Verification Error:', err);
           return res.status(401).json({ message: 'Invalid token' });
         }
       }
@@ -443,7 +440,7 @@ app.get('/users/me', passport.authenticate('jwt', { session: false }), async (re
         return res.status(404).json({ message: 'User not found' });
       }
   
-      console.log('🔹 Final user returned:', req.user);
+    
       res.status(200).json(req.user);
     } catch (err) {
       console.error('Error fetching user:', err);
