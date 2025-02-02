@@ -335,8 +335,7 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), async (req,
 });
 
 // Get a user's favorite movies
-// Add a movie to the authenticated user's favorites
-app.post('/users/movies/:MovieID', passport.authenticate('jwt', { session: false }), async (req, res) => {
+/*app.post('/users/movies/:MovieID', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         const userId = req.user._id; // Get user ID from the token
         const movieId = req.params.MovieID;
@@ -358,7 +357,36 @@ app.post('/users/movies/:MovieID', passport.authenticate('jwt', { session: false
         console.error('Error adding favorite movie:', err);
         res.status(500).json({ message: 'Error adding favorite movie' });
     }
+}); */
+
+app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    console.log("Incoming favorite request for user:", req.params.username);
+    console.log("Movie ID:", req.params.MovieID);
+
+    if (!req.params.MovieID) {
+        console.error("Movie ID is missing!");
+        return res.status(400).send("Movie ID is required");
+    }
+
+    try {
+        const updatedUser = await Users.findOneAndUpdate(
+            { username: req.params.username },
+            { $addToSet: { favoriteMovies: req.params.MovieID } }, // Avoids duplicates
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).send("User not found");
+        }
+
+        console.log("Movie added to favorites:", updatedUser);
+        res.json(updatedUser);
+    } catch (err) {
+        console.error("Error adding favorite movie:", err);
+        res.status(500).send("Error: " + err);
+    }
 });
+
 
 
 
