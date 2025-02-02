@@ -194,15 +194,11 @@ app.post('/users', [
 });
 
 app.post('/login', async (req, res) => {
-    console.error("🔹 Incoming Login Request Body:", req.body); // Log the request body
+    console.log("🔹 Incoming Login Request Body:", req.body);
 
-    // Check if req.body is actually an object
-    if (!req.body || typeof req.body !== "object") {
-        console.error("🚨 Backend received an INVALID request body:", req.body);
-        return res.status(400).json({ message: "Invalid request format.", user: false });
-    }
-
-    const { username, password } = req.body;
+    // Convert to lowercase to match database storage
+    const username = req.body.username.toLowerCase();  
+    const password = req.body.password;
 
     if (!username || !password) {
         console.error("🚨 Missing Username or Password! Received:", req.body);
@@ -229,12 +225,7 @@ app.post('/login', async (req, res) => {
             { expiresIn: '7d' }
         );
 
-        console.error("✅ User Authenticated:", user.username);
-        console.log("Login Response:", {
-            token,
-            user: { _id: user._id, username: user.username },
-          });
-           // Log user authentication
+        console.log("✅ User Authenticated:", user.username);
         res.json({ token, user: { _id: user._id, username: user.username } });
 
     } catch (err) {
