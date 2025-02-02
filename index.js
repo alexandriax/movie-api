@@ -206,7 +206,7 @@ app.post('/login', async (req, res) => {
     }
 
     try {
-        const user = await Users.findOne({ username });
+        const user = await Users.findOne({ username: new RegExp(`^${username}$`, "i") });
 
         if (!user) {
             console.error("🚨 User Not Found:", username);
