@@ -194,42 +194,45 @@ app.post('/users', [
 });
 
 app.post('/login', async (req, res) => {
+    console.error("🔹 Incoming Login Request Body:", req.body); // Log the request body
+
     const { username, password } = req.body;
+
+    // If username or password is missing, return an error
+    if (!username || !password) {
+        console.error("🚨 Missing Username or Password!", req.body);
+        return res.status(400).json({ message: "Username and password are required.", user: false });
+    }
 
     try {
         const user = await Users.findOne({ username });
 
         if (!user) {
-            return res.status(400).json({ message: 'Username not found', user: false });
+            console.error("🚨 User Not Found:", username);
+            return res.status(400).json({ message: "Invalid username or password", user: false });
         }
 
         const isPasswordValid = bcrypt.compareSync(password, user.password);
         if (!isPasswordValid) {
-            return res.status(400).json({ message: 'Incorrect password', user: false });
+            console.error("🚨 Incorrect Password for User:", username);
+            return res.status(400).json({ message: "Invalid username or password", user: false });
         }
 
         const token = jwt.sign(
-            { userId: user._id, username: user.username }, 
+            { userId: user._id, username: user.username },
             process.env.JWT_SECRET || 'your_jwt_secret',
             { expiresIn: '7d' }
         );
 
-        console.log("✅ User found:", user);
-        console.log("✅ Sending Response:", { 
-            token, 
-            user: { _id: user._id, username: user.username }
-        });
-
-        res.json({ 
-            token, 
-            user: { _id: user._id, username: user.username }
-        });
+        console.error("✅ User Authenticated:", user.username); // Log user authentication
+        res.json({ token, user: { _id: user._id, username: user.username } });
 
     } catch (err) {
-        console.error('🚨 Login error:', err);
-        res.status(500).json({ message: 'Something went wrong', user: false });
+        console.error("🚨 Server Error:", err);
+        res.status(500).json({ message: "Internal server error", user: false });
     }
 });
+
 
 
 // UPDATE
