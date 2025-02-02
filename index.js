@@ -128,7 +128,7 @@ app.get('/', (req, res) => {
 // add a movie to a user's list of favorites
 app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { session: false }),  async (req, res) => {
     await Users.findOneAndUpdate({username: req.params.username}, {
-        $push: { favoriteMovies: req.params.MovieID}
+        $addToSet: { favoriteMovies: req.params.MovieID}
     },
 { new: true })
 .then((updatedUser) => {
@@ -371,7 +371,7 @@ app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { sess
     try {
         const updatedUser = await Users.findOneAndUpdate(
             { username: req.params.username },
-            { $addToSet: { favoriteMovies: req.params.MovieID } }, // Avoids duplicates
+            { $push: { favoriteMovies: req.params.MovieID } }, // Avoids duplicates
             { new: true }
         );
 
