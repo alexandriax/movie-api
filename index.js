@@ -129,7 +129,7 @@ app.get('/', (req, res) => {
 // CREATE
 
 // add a movie to a user's list of favorites
-app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { session: false }),  async (req, res) => {
+/*app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { session: false }),  async (req, res) => {
     await Users.findOneAndUpdate({username: req.params.username}, {
         $addToSet: { favoriteMovies: req.params.MovieID}
     },
@@ -141,6 +141,25 @@ app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { sess
     console.error(err);
     res.status(500).send('error: ' + err);
 });
+});
+*/
+app.post('/users/:userId/movies/:MovieID', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+        const updatedUser = await Users.findOneAndUpdate(
+            { _id: req.params.userId }, 
+            { $addToSet: { favoriteMovies: req.params.MovieID } }, 
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).send("User not found");
+        }
+
+        res.json(updatedUser);
+    } catch (err) {
+        console.error("Error adding favorite movie:", err);
+        res.status(500).send("Error: " + err);
+    }
 });
 
 //add a user
@@ -451,7 +470,7 @@ app.post('/users/:userId/movies/:MovieID', passport.authenticate('jwt', { sessio
 
 app.get('/users/:userId/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
-        const user = await Users.findById(req.params.userId).populate('favoriteMovies'); // ✅ Use `Users`
+        const user = await Users.findById(req.params.userId).populate('favoriteMovies');
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -461,6 +480,7 @@ app.get('/users/:userId/movies', passport.authenticate('jwt', { session: false }
         res.status(500).json({ message: "Internal server error" });
     }
 });
+
 
 
 
@@ -537,7 +557,7 @@ app.delete('/users/movies/:MovieID', passport.authenticate('jwt', { session: fal
         const userId = req.user._id; // Get user ID from the token
         const movieId = req.params.MovieID;
 
-        console.log(`🔹 Removing movie ${movieId} from user ${userId}`);
+        console.log(`Removing movie ${movieId} from user ${userId}`);
 
         const updatedUser = await Users.findByIdAndUpdate(
             userId,
