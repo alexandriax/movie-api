@@ -214,16 +214,23 @@ app.post('/login', async (req, res) => {
             { expiresIn: '7d' }
         );
 
-        
+        console.log("✅ User found:", user);
+        console.log("✅ Sending Response:", { 
+            token, 
+            user: { _id: user._id, username: user.username }
+        });
+
         res.json({ 
             token, 
             user: { _id: user._id, username: user.username }
         });
+
     } catch (err) {
-        console.error('Login error:', err);
+        console.error('🚨 Login error:', err);
         res.status(500).json({ message: 'Something went wrong', user: false });
     }
 });
+
 
 // UPDATE
 
