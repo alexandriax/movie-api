@@ -451,7 +451,7 @@ app.post('/users/:userId/movies/:MovieID', passport.authenticate('jwt', { sessio
 
 app.get('/users/:userId/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
-        const user = await User.findById(req.params.userId);
+        const user = await Users.findById(req.params.userId);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
