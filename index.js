@@ -421,8 +421,8 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), async (req,
     }
 }); */
 
-app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    console.log("Incoming favorite request for user:", req.params.username);
+app.post('/users/:userId/movies/:MovieID', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    console.log("Incoming favorite request for user:", req.params.userId);
     console.log("Movie ID:", req.params.MovieID);
 
     if (!req.params.MovieID) {
@@ -448,6 +448,20 @@ app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { sess
         res.status(500).send("Error: " + err);
     }
 });
+
+app.get('/users/:userId/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+        const user = await User.findById(req.params.userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.json(user.favoriteMovies);
+    } catch (error) {
+        console.error('Error fetching favorite movies:', error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
 
 
 
