@@ -196,11 +196,16 @@ app.post('/users', [
 app.post('/login', async (req, res) => {
     console.error("🔹 Incoming Login Request Body:", req.body); // Log the request body
 
+    // Check if req.body is actually an object
+    if (!req.body || typeof req.body !== "object") {
+        console.error("🚨 Backend received an INVALID request body:", req.body);
+        return res.status(400).json({ message: "Invalid request format.", user: false });
+    }
+
     const { username, password } = req.body;
 
-    // If username or password is missing, return an error
     if (!username || !password) {
-        console.error("🚨 Missing Username or Password!", req.body);
+        console.error("🚨 Missing Username or Password! Received:", req.body);
         return res.status(400).json({ message: "Username and password are required.", user: false });
     }
 
@@ -232,6 +237,7 @@ app.post('/login', async (req, res) => {
         res.status(500).json({ message: "Internal server error", user: false });
     }
 });
+
 
 
 
