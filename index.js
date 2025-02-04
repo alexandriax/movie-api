@@ -217,10 +217,10 @@ app.put('/users/:userId', passport.authenticate('jwt', { session: false }),
             return res.status(422).json({errors: errors.array() });
     }
 
-    if(req.user._id.toString !== req.params.userId){
+    if(req.user._id.toString() !== req.params.userId){
         return res.status(400).send('permission denied');
     }
-    await Users.findOneAndUpdate({username: req.params.userId}, {$set:
+    await Users.findOneAndUpdate({ _id: req.params.userId }, {$set:
         {
             username: req.body.username,
             password: req.body.password,
