@@ -229,7 +229,9 @@ app.put('/users/:userId', passport.authenticate('jwt', { session: false }),
     };
 
     if (req.body.password) {
+        console.log("Password received for update:", req.body.password);
         updatedFields.password = await bcrypt.hash(req.body.password, 10);
+        console.log("Hashed Password:", updatedFields.password);
     }
 
     await Users.findOneAndUpdate({ _id: req.params.userId }, 
