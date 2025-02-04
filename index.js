@@ -217,6 +217,10 @@ app.put('/users/:userId', passport.authenticate('jwt', { session: false }),
             return res.status(422).json({errors: errors.array() });
     }
 
+    if (req.body.password) {
+        updateData.password = bcrypt.hashSync(req.body.password, 10);
+    }
+
     if(req.user._id.toString() !== req.params.userId){
         return res.status(400).send('permission denied');
     }
