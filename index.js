@@ -206,45 +206,49 @@ app.put('/users/:userId', passport.authenticate('jwt', { session: false }),
 [
     check('username', 'username is required').isLength({min: 5}),
     check('username', 'username contains invalid characters').isAlphanumeric(),
-    check('password', 'password is required').not().isEmpty(),
     check('email', 'email does not appear to be valid').isEmail()
 ],
-     async (req, res) => {
-
+async (req, res) => {
     let errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-            return res.status(422).json({errors: errors.array() });
+        return res.status(422).json({ errors: errors.array() });
     }
 
-
-    if(req.user._id.toString() !== req.params.userId){
-        return res.status(400).send('permission denied');
+    if (req.user._id.toString() !== req.params.userId) {
+        return res.status(400).send('Permission denied');
     }
 
+    // 🔥 Create an object with only fields that need updating
     let updatedFields = {
         username: req.body.username,
         email: req.body.email,
         birthday: req.body.birthday
     };
 
+    // 🔥 Only hash the password if it's being updated
     if (req.body.password) {
-        console.log("Password received for update:", req.body.password);
         updatedFields.password = await bcrypt.hash(req.body.password, 10);
-        console.log("Hashed Password:", updatedFields.password);
     }
 
-    await Users.findOneAndUpdate({ _id: req.params.userId }, 
-        {$set: updatedFields},
-{ new: true }) // makes sure updated document is returned
-.then((updatedUser) => {
-    res.json(updatedUser);
-})
-.catch((err) => {
-    console.error(err);
-    res.status(500).send('error: ' + err);
-  })
+    try {
+        const updatedUser = await Users.findOneAndUpdate(
+            { _id: req.params.userId }, 
+            { $set: updatedFields },
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).send("User not found");
+        }
+
+        res.json(updatedUser);
+    } catch (err) {
+        console.error("Error updating user:", err);
+        res.status(500).send("Error: " + err);
+    }
 });
+
 
 
 // READ
