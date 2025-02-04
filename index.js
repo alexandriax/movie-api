@@ -11,7 +11,7 @@ const app = express();
 
 const mongoose = require('mongoose');
 const models = require('./models.js');
-// gpt suggestion
+
 
 
 const Movies = models.Movie;
@@ -36,7 +36,7 @@ mongoose.connect( process.env.CONNECTION_URI ,
 console.log('MongoDB URI:', process.env.CONNECTION_URI)
 
 
-//
+
 
 //static
 
@@ -129,20 +129,7 @@ app.get('/', (req, res) => {
 // CREATE
 
 // add a movie to a user's list of favorites
-/*app.post('/users/:username/movies/:MovieID', passport.authenticate('jwt', { session: false }),  async (req, res) => {
-    await Users.findOneAndUpdate({username: req.params.username}, {
-        $addToSet: { favoriteMovies: req.params.MovieID}
-    },
-{ new: true })
-.then((updatedUser) => {
-    res.json(updatedUser);
-})
-.catch((err) => {
-    console.error(err);
-    res.status(500).send('error: ' + err);
-});
-});
-*/
+
 app.post('/users/:userId/movies/:MovieID', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         const updatedUser = await Users.findOneAndUpdate(
@@ -212,69 +199,10 @@ app.post('/users', [
       });
 });
 
-/*app.post('/login', async (req, res) => {
-    console.error("Incoming Login Request Body:", req.body); // Log the request body
-
-    // Check if req.body is actually an object
-    if (!req.body || typeof req.body !== "object") {
-        console.error("Backend received an INVALID request body:", req.body);
-        return res.status(400).json({ message: "Invalid request format.", user: false });
-    }
-
-    const { username, password } = req.body;
-
-    if (!username || !password) {
-        console.error("Missing Username or Password! Received:", req.body);
-        return res.status(400).json({ message: "Username and password are required.", user: false });
-    }
-
-    try {
-        const user = await Users.findOne({ username: req.body.username.toLowerCase() });
-
-        if (!user) {
-            console.error(" User Not Found:", username);
-            return res.status(400).json({ message: "Invalid username or password", user: false });
-        }
-
-        const isPasswordValid = bcrypt.compareSync(password, user.password);
-        if (!isPasswordValid) {
-            console.error(" Incorrect Password for User:", username);
-            return res.status(400).json({ message: "Invalid username or password", user: false });
-        }
-
-        const token = jwt.sign(
-            { userId: user._id, username: user.username },
-            process.env.JWT_SECRET || 'your_jwt_secret',
-            { expiresIn: '7d' }
-        );
-
-        console.error("User Authenticated:", user.username);
-        console.log("Login Response:", {
-            token,
-            user: { _id: user._id, username: user.username },
-          });
-           // Log user authentication
-           res.json({
-            token: token,
-            user: { 
-                _id: user._id, 
-                username: user.username 
-            }
-        });
-
-    } catch (err) {
-        console.error("Server Error:", err);
-        res.status(500).json({ message: "Internal server error", user: false });
-    }
-});
-*/
-
-
-
 // UPDATE
 
 // update a user's info by username
-app.put('/users/:username', passport.authenticate('jwt', { session: false }),
+app.put('/users/:userId', passport.authenticate('jwt', { session: false }),
 [
     check('username', 'username is required').isLength({min: 5}),
     check('username', 'username contains invalid characters').isAlphanumeric(),
@@ -415,30 +343,7 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), async (req,
     }
 });
 
-// Get a user's favorite movies
-/*app.post('/users/movies/:MovieID', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    try {
-        const userId = req.user._id; // Get user ID from the token
-        const movieId = req.params.MovieID;
-
-        console.log(`Adding movie ${movieId} to user ${userId}`);
-
-        const updatedUser = await Users.findByIdAndUpdate(
-            userId,
-            { $addToSet: { favoriteMovies: movieId } }, // Avoid duplicates
-            { new: true }
-        ).populate('favoriteMovies');
-
-        if (!updatedUser) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        res.status(200).json(updatedUser);
-    } catch (err) {
-        console.error('Error adding favorite movie:', err);
-        res.status(500).json({ message: 'Error adding favorite movie' });
-    }
-}); */
+// get a user's favorite movies
 
 app.post('/users/:userId/movies/:MovieID', passport.authenticate('jwt', { session: false }), async (req, res) => {
     console.log("Incoming favorite request for user:", req.params.userId);
@@ -452,7 +357,7 @@ app.post('/users/:userId/movies/:MovieID', passport.authenticate('jwt', { sessio
     try {
         const updatedUser = await Users.findOneAndUpdate(
             { username: req.params.username },
-            { $push: { favoriteMovies: req.params.MovieID } }, // Avoids duplicates
+            { $push: { favoriteMovies: req.params.MovieID } }, 
             { new: true }
         );
 
@@ -470,38 +375,17 @@ app.post('/users/:userId/movies/:MovieID', passport.authenticate('jwt', { sessio
 
 app.get('/users/:userId/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
-        const user = await Users.findById(req.params.userId).populate('favoriteMovies'); // Populate full movies
+        const user = await Users.findById(req.params.userId).populate('favoriteMovies'); 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        res.json(user.favoriteMovies); // Now returns full movie objects
+        res.json(user.favoriteMovies); 
     } catch (error) {
         console.error('Error fetching favorite movies:', error);
         res.status(500).json({ message: "Internal server error" });
     }
 });
 
-
-
-
-
-
-
-
-
-
-/* 
-// get all users
-app.get('/users', async (req, res) => {
-    await Users.find()
-      .then((users) => {
-        res.status(201).json(users);
-      })
-      .catch((err) => {
-        console.error(err);
-        res.status(500).send('error: ' + err);
-      });
-}); */
 
 app.get('/users/:username', passport.authenticate('jwt', { session: false }), async (req, res) => {
     await Users.findOne({username: req.params.username})
@@ -513,49 +397,14 @@ app.get('/users/:username', passport.authenticate('jwt', { session: false }), as
         res.status(500).send('error: ' + err);
       });
 });
-
-/*app.get('/users/:username', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  
-    try {
-      if (!req.user || !req.user._id) {
-        
-        
-        const token = req.headers.authorization?.split(' ')[1];
-  
-        try {
-          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret' );
           
   
-          req.user = await Users.findById(decoded._id); // Fetch the user manually
-          console.log('Manually Retrieved User:', req.user);
-        } catch (err) {
-          console.error('JWT Verification Error:', err);
-          return res.status(401).json({ message: 'Invalid token' });
-        }
-      }
-  
-      if (!req.user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-    
-      res.status(200).json(req.user);
-    } catch (err) {
-      console.error('Error fetching user:', err);
-      res.status(500).json({ message: 'Server error' });
-    }
-  });*/
-  
-  
-  
-  
-
 // DELETE
 
-// Remove a movie from the authenticated user's favorites
+// remove a movie from the user's favorites
 app.delete('/users/movies/:MovieID', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
-        const userId = req.user._id; // Get user ID from the token
+        const userId = req.user._id; 
         const movieId = req.params.MovieID;
 
         console.log(`Removing movie ${movieId} from user ${userId}`);

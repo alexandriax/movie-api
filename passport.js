@@ -40,28 +40,13 @@ passport.use(
     )
 );
 
-/*passport.use(new JWTStrategy({
-    jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-    secretOrKey: 'your_jwt_secret'
-}, async (jwtPayload, callback) => {
-    return await Users.findById(jwtPayload._id)
-      .then((user) => {
-        //console.log('🔹 User found in DB:', user);
-        console.log('🔹 Decoded JWT:', jwtPayload);  // Debugging log
-        return callback(null, user);
-      })
-      .catch((error) => {
-        console.error('🔹 Error finding user:', error);
-        return callback(error);
-      });
-}));
-*/
+
 
 passport.use(new JWTStrategy({
     jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
     secretOrKey: process.env.JWT_SECRET || 'your_jwt_secret' 
 }, async (jwtPayload, done) => {
-    console.log('Decoded JWT:', jwtPayload);  // Debugging log
+    console.log('Decoded JWT:', jwtPayload);  
 
     try {
         const user = await Users.findById(jwtPayload.userId);
