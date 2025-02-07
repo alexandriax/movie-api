@@ -56,6 +56,9 @@ app.use(express.static('public'));
 app.use(morgan('common'));
 app.use(bodyParser.json());
 
+/**
+ * Enables CORS for all routes.
+ */
 app.use(cors({ 
     origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -143,7 +146,7 @@ app.get('/', (req, res) => {
 
 /**
  * adds a movie to a user's list of favorites.
- * @name POST /users/:userId/movies/:MovieID
+ * @name /users/:userId/movies/:MovieID
  * @function
  * @memberof module:index
  * @param {string} userId - The user's ID.
@@ -180,7 +183,7 @@ app.post('/users/:userId/movies/:MovieID', passport.authenticate('jwt', { sessio
 }*/
 /**
  * Registers a new user.
- * @name POST /users
+ * @name /users
  * @function
  * @memberof module:index
  * @param {Object} req - Express request object.
@@ -229,7 +232,12 @@ app.post('/users', [
 
 // UPDATE
 
-// update a user's info by username
+/**
+* update user profile
+* @name /users/:userId
+* @function
+* @memberof module:index
+*/
 app.put('/users/:userId', passport.authenticate('jwt', { session: false }),
 [
     check('username', 'username is required').isLength({min: 5}),
@@ -281,7 +289,7 @@ async (req, res) => {
 
 /**
  * fetches all movies.
- * @name GET /movies
+ * @name /movies
  * @function
  * @memberof module:index
  * @returns {Array<Object>} List of all movies.
@@ -315,7 +323,7 @@ app.get('/movies', (req, res, next) => {
 
 /**
  * fetches a specific movie by ID.
- * @name GET /movies/:id
+ * @name /movies/:id
  * @function
  * @memberof module:index
  * @param {string} id - The movie ID.
@@ -334,7 +342,14 @@ app.get('/movies/:id', passport.authenticate('jwt', { session: false }), async (
     }
 });
 
-
+/**
+ * fetches a specific movie by title
+ * @name /movies/:title
+ * @function
+ * @memberof module:index
+ * @param {string} title 
+ * @returns {Object} requested movie
+ */
 app.get('/movies/:title', passport.authenticate('jwt', { session: false }), (req, res) => {
     const { title } = req.params;
     const movie = movies.find(movie => movie.title === title );
@@ -346,7 +361,14 @@ app.get('/movies/:title', passport.authenticate('jwt', { session: false }), (req
     }
 });
 
-
+/**
+ * fetches a movie's genre.
+ * @name /movies/genre/:genreName
+ * @function
+ * @memberof module:index
+ * @param {string} genreName 
+ * @returns {Object} requested movie's genre
+ */
 app.get('/movies/genre/:genreName', passport.authenticate('jwt', { session: false }), (req, res) => {
     const { genreName } = req.params;
     const genre = movies.find(movie => movie.genre.name === genreName).genre;
@@ -358,6 +380,14 @@ app.get('/movies/genre/:genreName', passport.authenticate('jwt', { session: fals
     }
 })
 
+/**
+ * fetches a movie's director. 
+ * @name /movies/director/:directorName
+ * @function
+ * @memberof module:index
+ * @param {string} directorName 
+ * @returns {Object} requested movie's director
+ */
 app.get('/movies/director/:directorName', passport.authenticate('jwt', { session: false }),  (req, res) => {
     const { directorName } = req.params;
   
@@ -369,6 +399,12 @@ app.get('/movies/director/:directorName', passport.authenticate('jwt', { session
     }
 }); 
 
+/**
+ * fetches all movies
+ * @name /movies
+ * @function
+ * @memberof module:index
+ */
 app.get('/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
     const { search } = req.query;
     let query = {};
@@ -396,8 +432,13 @@ app.get('/movies', passport.authenticate('jwt', { session: false }), async (req,
     }
 });
 
-// get a user's favorite movies
 
+/**
+ * updates a user's favorite movies.
+ * @name /users/:userId/movies/:MovieID
+ * @function
+ * @memberof module:index
+ */
 app.post('/users/:userId/movies/:MovieID', passport.authenticate('jwt', { session: false }), async (req, res) => {
     console.log("Incoming favorite request for user:", req.params.userId);
     console.log("Movie ID:", req.params.MovieID);
@@ -426,6 +467,12 @@ app.post('/users/:userId/movies/:MovieID', passport.authenticate('jwt', { sessio
     }
 });
 
+/**
+ * fetches a user's favorite movies.
+ * @name /users/:userId/movies
+ * @function
+ * @memberof module:index
+ */
 app.get('/users/:userId/movies', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         const user = await Users.findById(req.params.userId).populate('favoriteMovies'); 
@@ -439,7 +486,12 @@ app.get('/users/:userId/movies', passport.authenticate('jwt', { session: false }
     }
 });
 
-
+/**
+ * fetches a user's profile
+ * @name /users/:username
+ * @function
+ * @memberof module:index
+ */
 app.get('/users/:username', passport.authenticate('jwt', { session: false }), async (req, res) => {
     await Users.findOne({username: req.params.username})
       .then((user) => {
@@ -454,7 +506,12 @@ app.get('/users/:username', passport.authenticate('jwt', { session: false }), as
   
 // DELETE
 
-// remove a movie from the user's favorites
+/**
+ * removes a user's favorite movie.
+ * @name /users/:userId/movies/:MovieID
+ * @function
+ * @memberof module:index
+ */
 app.delete('/users/movies/:MovieID', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         const userId = req.user._id; 
@@ -480,7 +537,12 @@ app.delete('/users/movies/:MovieID', passport.authenticate('jwt', { session: fal
 });
 
 
-
+/**
+ * deletes a user.
+ * @name /users/:username
+ * @function
+ * @memberof module:index
+ */
 app.delete('/users/:username', passport.authenticate('jwt', { session: false }), async (req, res) => {
     await Users.findOneAndDelete({username: req.params.username})
     .then((user) => {
